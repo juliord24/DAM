@@ -30,7 +30,7 @@ public class App {
                 do{
                     repetir1 = false;
                     try{
-                        System.out.println("\nElije el equipo del cual quieras ver la información introducienco su número(1-8) o introduce un 9 para verlos todos a la vez. Introduce un 0 para cerrar este menú.");
+                        System.out.println("\nElige el equipo del cual quieras ver la información introducienco su número(1-8) o introduce un 9 para verlos todos a la vez. Introduce un 0 para cerrar este menú.");
                         intRes1 = kb.nextInt();
                         if (intRes1 < 0 || intRes1 > 9){
                             throw new MyException(1);
