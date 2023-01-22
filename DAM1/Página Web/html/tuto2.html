@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="../css/index.css">
+        <link rel="stylesheet" href="../css/navegacion.css">
+        <title>P&aacute;gina web Julio</title>
+    </head>
+    <body>
+        <div id="cuerpo">
+            <div id="cabecera">
+                <div id="contenedor_logo"> <a href="./index.html"><img id="logo" src="../media/logo.jpg" alt=""></a></div>
+                <div id="navegacion">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li ><a href="tuto1.html">Tutorial 1</a></li>
+                        <li class="enlace_actual"><a href="tuto2.html">Tutorial 2</a></li>
+                        <li><a href="https://instagram.com/julio_rd24"><img src="../media/insta.png" alt=""></a></li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <h1>Tutorial 2</h1>
+                    <p>Comenzamos, como siempre, escaneando el objetivo una vez que estamos conectados a la VPN. Ejecutando el siguiente comando
+                        nmap escaneará todos los puertos y mostrará las versiones de servicio de cada uno de ellos.
+                        Como se mencionó anteriormente, observamos que el puerto 445 TCP para SMB está activo y funcionando, lo que significa que tenemos un recurso compartido activo que potencialmente podríamos utilizar.
+                        que tenemos un recurso compartido activo que potencialmente podríamos explorar. Piensa en este recurso compartido como una carpeta a la que se puede acceder
+                        a través de Internet. Para ello, necesitaremos tener instalados los servicios y scripts adecuados.
+                        Para enumerar con éxito el contenido del recurso compartido en el sistema remoto, podemos utilizar un script llamado
+                        smbclient . Si el script no está presente en su máquina virtual, puede instalarlo escribiendo el siguiente comando
+                        en el terminal (para sistemas operativos basados en Debian):
+                        -sV: sondear puertos abiertos para determinar la información de servicio/versión
+                        Si la salida del terminal es la misma que la anterior, significa que ya tiene instalada la última versión de smbclient
+                        instalada. Si no es así, puede continuar con la instalación. Nuestro siguiente paso es empezar a enumerar los contenidos de
+                        el recurso compartido encontrado en nuestro objetivo en ambos casos.
+                        Smbclient intentará conectarse al host remoto y comprobar si se requiere autenticación. Si
+                        la hay, nos pedirá una contraseña para nuestro nombre de usuario local. Deberíamos tomar nota de esto. Si no
+                        Si no especificamos un nombre de usuario específico a smbclient cuando intente conectarse al host remoto, simplemente utilizará el nombre de usuario de nuestra máquina local.
+                        nombre de usuario de su máquina local. Es decir, el nombre de usuario con el que ha iniciado sesión en su máquina virtual. Esto es así
+                        porque la autenticación SMB siempre requiere un nombre de usuario, por lo que al no darle uno explícitamente para intentar iniciar sesión
+                        simplemente tendrá que pasar tu nombre de usuario local actual para evitar que se produzca un error con el protocolo.
+                        Sin embargo, vamos a utilizar nuestro nombre de usuario local ya que no sabemos de ningún nombre de usuario remoto presente en
+                        en el host de destino con el que potencialmente podríamos iniciar sesión. A continuación, se nos pedirá una contraseña.
+                        Esta contraseña está relacionada con el nombre de usuario introducido anteriormente. Hipotéticamente, si fuéramos un usuario remoto legítimo
+                        remoto legítimo intentando acceder a su recurso, sabríamos nuestro nombre de usuario y contraseña e iniciaríamos sesión normalmente para
+                        acceder a nuestro recurso compartido. En este caso, no disponemos de dichas credenciales, por lo que lo que intentaremos realizar es cualquiera de
+                        lo siguiente:
+                        Autenticación de invitado
+                        Autenticación anónima
+                        Cualquiera de ellas hará que accedamos sin conocer una combinación adecuada de usuario/contraseña y
+                        ver los archivos almacenados en el recurso compartido. Procedamos a probarlo. Dejamos el campo de contraseña en blanco, simplemente
+                        pulsando Intro para indicar al script que siga adelante.
+                        Como siempre, podemos escribir el nombre de nuestro script en el terminal seguido del modificador -h o --help para encontrar
+                        más información sobre las capacidades de este script y su uso.
+                        Ejecutando el comando anterior, vemos que se muestran cuatro acciones separadas. Veamos cada uno de ellos
+                        y veamos lo que significan.
+                        ADMIN$ - Los recursos compartidos administrativos son recursos compartidos de red ocultos creados por la familia de sistemas operativos Windows NT que permiten a los administradores del sistema acceder a los recursos compartidos de red.
+                        que permiten a los administradores del sistema tener acceso remoto a todos los volúmenes de disco de un sistema conectado en red.
+                        sistema conectado a la red. Estos recursos compartidos no pueden eliminarse permanentemente, pero pueden desactivarse.
+                        C$ - Compartición administrativa para el volumen de disco C:\. Aquí se aloja el sistema operativo.
+                        IPC$ - El recurso compartido de comunicación entre procesos. Se utiliza para la comunicación entre procesos a través de
+                        y no es parte del sistema de archivos.
+                        WorkShares: recurso compartido personalizado.
+                        [-L|--list=HOST] : Selección del host de destino para la solicitud de conexión.
+                        Punto de apoyo
+                        Intentaremos conectarnos a cada uno de los recursos compartidos excepto al de IPC$, que no es valioso para nosotros ya que no es navegable como lo sería cualquier directorio normal.
+                        no es navegable como cualquier directorio normal y no contiene ningún archivo que podamos utilizar en esta etapa de nuestra experiencia de aprendizaje.
+                        de nuestra experiencia de aprendizaje. Utilizaremos la misma táctica que antes, intentando iniciar sesión sin las
+                        credenciales adecuadas para encontrar permisos mal configurados en cualquiera de estos recursos compartidos. Daremos una
+                        para cada nombre de usuario para ver si funciona. Primero, probemos con el de ADMIN$.
+                        Aparece NT_STATUS_ACCESS_DENIED, indicándonos que no tenemos las credenciales adecuadas para
+                        conectarse a este recurso compartido. Seguiremos con el recurso compartido administrativo C$.
+                        La misma idea aquí. Última oportunidad. Procedemos a intentar iniciar sesión en el recurso compartido SMB personalizado WorkShares.
+                        Esto parece ser hecho por el hombre, por lo tanto propenso a errores de configuración.
+                        No lo conseguimos. El recurso compartido WorkShares SMB estaba mal configurado, lo que nos permitió iniciar sesión sin las credenciales adecuadas.
+                        credenciales apropiadas. Podemos ver que el prompt de nuestro terminal ha cambiado a smb: \> , lo que nos permite saber que nuestro intérprete de comandos es ahora
+                        interactuando con el servicio. Podemos utilizar el comando help para ver lo que podemos hacer dentro de este shell.
+                        De la salida, podemos notar que la mayoría de los comandos a los que estamos acostumbrados en Linux están presentes. Usaremos
+                        usaremos los siguientes para navegar por el recurso compartido:
+                        ls : lista el contenido de los directorios dentro del recurso compartido
+                        cd : cambiar los directorios actuales dentro del recurso compartido
+                        get : descargar el contenido de los directorios del recurso compartido
+                        exit : salir del shell smb
+                        Tecleando el comando ls nos mostrará dos directorios, uno para Amy.J y otro para James.P . Visitamos el primero
+                        visitamos el primero y nos encontramos con un archivo llamado worknotes.txt , que podemos descargar utilizando el comando get.
+                        Este archivo está ahora guardado dentro de la ubicación desde donde ejecutamos nuestro comando smbclient. Continuemos
+                        buscando otros archivos valiosos en el directorio de James.P . Navegando hasta él, podemos encontrar el buscado archivo flag.txt
+                        buscado. Después de recuperar este archivo, podemos utilizar el comando exit para salir del shell y comprobar los archivos que acabamos de recuperar.
+                        que acabamos de recuperar.
+                        Una vez que el intérprete de comandos SMB se mata, podemos leer los dos documentos que exfiltramos. El worknotes.txt parece
+                        estar insinuando más servicios que podrían ser explotados. Típicamente, este tipo de archivos se pueden encontrar por ahí
+                        por ahí en las máquinas dentro de un Hack The Box Pro Lab, insinuando hacia su próximo objetivo o ser capaz de ser
+                        como un recurso para una mayor explotación o movimiento lateral dentro del laboratorio. En nuestro caso, es sólo una prueba
+                        de concepto. No necesitaremos este archivo.
+                        El archivo flag.txt, sin embargo, es lo que buscamos. Lo leemos e introducimos la bandera en la plataforma, poseyendo
+                        la máquina Dancing.
+                        ¡Felicidades!
+                    </p>
+            </div>
+            <div id="pie"></div>
+        </div>
+    </body>
+</html>
